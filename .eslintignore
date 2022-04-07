@@ -1,6 +1,7 @@
 # .gitignore copy
 
 # custom
+bin
 dist
 examples/**/package-lock.json
 

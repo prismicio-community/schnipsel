@@ -1,0 +1,6 @@
+{
+  "input": {
+    "directory": "playground/src"
+  },
+  "renderers": ["foo"]
+}
