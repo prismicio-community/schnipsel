@@ -3,12 +3,15 @@ import { join } from "node:path";
 import chalk from "chalk";
 import chokidar from "chokidar";
 
-import { logger } from "./lib";
 import { ConfigFile } from "./ConfigFile";
 import { Input } from "./Input";
+import { Renderers } from "./renderers";
+import { logger } from "./lib";
 import { Config } from "./types";
 
 export const readAndRender = async (config: Config) => {
+	const now = Date.now();
+
 	const input = new Input(config.input);
 	const snippets = await input.read();
 
@@ -19,18 +22,28 @@ export const readAndRender = async (config: Config) => {
 			config.renderers.length > 1 ? "s" : ""
 		}...`,
 	);
+
+	await Promise.all(
+		config.renderers.map(async (renderer) =>
+			new Renderers[renderer.name](renderer.options).render(snippets),
+		),
+	);
+
+	logger.success(
+		`Read and rendered snippets in ${chalk.cyan(`${Date.now() - now}ms`)}`,
+	);
 };
 
 export const run = async () => {
 	const configFile = new ConfigFile();
-	const config = configFile.read();
+	const config = await configFile.read();
 
 	await readAndRender(config);
 };
 
 export const runWatch = async () => {
 	const configFile = new ConfigFile();
-	const config = configFile.read();
+	const config = await configFile.read();
 
 	const handler = async () => {
 		console.clear();

@@ -3,21 +3,22 @@ import chalk from "chalk";
 import { JSONFile, JSONFileWithMeta, debug } from "./lib";
 import { CONFIG_FILE, NAME } from "./const";
 import { Config } from "./types";
+import { Renderers } from "./renderers";
 
 export class ConfigFile extends JSONFile<Config> {
 	constructor(cwd = process.cwd()) {
 		super(CONFIG_FILE, cwd);
 	}
 
-	init() {
+	async init(): Promise<void> {
 		if (this.exists()) {
 			throw new Error(
 				`${chalk.cyan(CONFIG_FILE)} already exists in ${chalk.cyan(this.cwd)}`,
 			);
 		}
 
-		this.write({
-			__meta: new JSONFile("package.json", this.cwd).meta,
+		await this.write({
+			__meta: await new JSONFile("package.json", this.cwd).readMeta(),
 			input: {
 				directory: "src",
 			},
@@ -25,7 +26,7 @@ export class ConfigFile extends JSONFile<Config> {
 		});
 	}
 
-	read() {
+	async read(): Promise<JSONFileWithMeta<Config>> {
 		debug("Reading config file...");
 
 		if (!this.exists()) {
@@ -36,7 +37,7 @@ export class ConfigFile extends JSONFile<Config> {
 			);
 		}
 
-		const config = super.read();
+		const config = await super.read();
 
 		this.validate(config);
 
@@ -45,7 +46,9 @@ export class ConfigFile extends JSONFile<Config> {
 		return config;
 	}
 
-	validate(maybeConfig: JSONFileWithMeta): asserts maybeConfig is Config {
+	validate(
+		maybeConfig: JSONFileWithMeta,
+	): asserts maybeConfig is JSONFileWithMeta<Config> {
 		const errors: string[] = [];
 
 		// Validate `input`
@@ -95,6 +98,81 @@ export class ConfigFile extends JSONFile<Config> {
 			);
 		} else if (maybeConfig.renderers.length === 0) {
 			errors.push(`${chalk.cyan("renderers")} should not be empty`);
+		} else if (
+			maybeConfig.renderers.some(
+				(renderer) => !renderer || typeof renderer !== "object",
+			)
+		) {
+			errors.push(
+				`All ${chalk.cyan("renderers[n]")} should be of type ${chalk.cyan(
+					"object",
+				)}`,
+			);
+		} else {
+			if (maybeConfig.renderers.some((renderer) => !("name" in renderer))) {
+				errors.push(`Some ${chalk.cyan("renderers[n].name")} are missing`);
+			} else if (
+				maybeConfig.renderers.some(
+					(renderer) => typeof renderer.name !== "string",
+				)
+			) {
+				errors.push(
+					`All ${chalk.cyan(
+						"renderers[n].name",
+					)} should be of type ${chalk.cyan("string")}`,
+				);
+			} else if (
+				maybeConfig.renderers.some(
+					(renderer) => !Object.keys(Renderers).includes(renderer.name),
+				)
+			) {
+				errors.push(
+					`All ${chalk.cyan(
+						"renderers[n].name",
+					)} should be of type ${chalk.cyan(
+						Object.keys(Renderers)
+							.map((name) => `"${name}"`)
+							.join(" | "),
+					)}`,
+				);
+			}
+
+			if (maybeConfig.renderers.some((renderer) => !("options" in renderer))) {
+				errors.push(`Some ${chalk.cyan("renderers[n].options")} are missing`);
+			} else if (
+				maybeConfig.renderers.some(
+					(renderer) =>
+						!renderer.options || typeof renderer.options !== "object",
+				)
+			) {
+				errors.push(
+					`All ${chalk.cyan(
+						"renderers[n].options",
+					)} should be of type ${chalk.cyan("object")}`,
+				);
+			} else {
+				if (
+					maybeConfig.renderers.some(
+						(renderer) => !("outputDirectory" in renderer.options),
+					)
+				) {
+					errors.push(
+						`Some ${chalk.cyan(
+							"renderers[n].options.outputDirectory",
+						)} are missing`,
+					);
+				} else if (
+					maybeConfig.renderers.some(
+						(renderer) => typeof renderer.options.outputDirectory !== "string",
+					)
+				) {
+					errors.push(
+						`All ${chalk.cyan(
+							"renderers[n].options.outputDirectory",
+						)} should be of type ${chalk.cyan("string")}`,
+					);
+				}
+			}
 		}
 
 		if (errors.length) {

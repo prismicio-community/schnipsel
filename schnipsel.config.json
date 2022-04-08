@@ -2,5 +2,12 @@
   "input": {
     "directory": "playground/src"
   },
-  "renderers": ["foo"]
+  "renderers": [
+		{
+			"name": "vscode",
+			"options": {
+				"outputDirectory": "playground/vscode/snippets"
+			}
+		}
+	]
 }

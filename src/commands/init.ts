@@ -10,7 +10,7 @@ export const init = async (
 	_options: { [key: string]: unknown },
 ): Promise<void> => {
 	const configFile = new ConfigFile();
-	configFile.init();
+	await configFile.init();
 
 	lineBreak();
 	logger.success(`Created ${chalk.cyan(CONFIG_FILE)}`);

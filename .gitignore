@@ -2,6 +2,7 @@
 bin
 dist
 examples/**/package-lock.json
+playground/**/snippets
 
 # os
 .DS_Store

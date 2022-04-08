@@ -6,7 +6,7 @@ import fm from "front-matter";
 import { globby } from "globby";
 
 import { debug, logger } from "./lib";
-import { InputConfig } from "./types";
+import { InputConfig, SnippetObject } from "./types";
 
 export class Input {
 	private _options: InputConfig;
@@ -17,7 +17,7 @@ export class Input {
 		this._cwd = cwd;
 	}
 
-	private async _readSingle(path: string) {
+	private async _readSingle(path: string): Promise<SnippetObject | undefined> {
 		const filePath = join(this._cwd, this._options.directory, path);
 		const raw = await readFile(filePath, "utf8");
 
@@ -58,18 +58,18 @@ export class Input {
 		}
 
 		return {
-			name: attributes.name,
-			description: attributes.description,
-			scope: Array.isArray(attributes.scope)
+			name: attributes.name as string,
+			description: attributes.description as string,
+			scope: (Array.isArray(attributes.scope)
 				? attributes.scope
-				: [attributes.scope],
-			prefix: attributes.prefix,
+				: [attributes.scope]) as string[],
+			prefix: attributes.prefix as string,
 			// Only keep code block content
 			body: body.replace(/^.*?```\w*\n+/m, "").replace(/\n+```.*\n?$/m, ""),
 		};
 	}
 
-	async read() {
+	async read(): Promise<SnippetObject[]> {
 		debug("Looking for snippet files...");
 		const files = await globby(this._options.glob || "**/*.md", {
 			cwd: join(this._cwd, this._options.directory),
@@ -79,7 +79,7 @@ export class Input {
 		debug("Reading snippet files...");
 		const snippets = (
 			await Promise.all(files.map((file) => this._readSingle(file)))
-		).filter(Boolean);
+		).filter(Boolean) as SnippetObject[];
 		debug("%o snippet files read!", snippets.length);
 
 		return snippets;
