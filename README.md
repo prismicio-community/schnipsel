@@ -10,7 +10,7 @@ TODO: Replace all on all files (README.md, CONTRIBUTING.md, bug_report.md, packa
 
 -->
 
-# schnipsel
+# Schnipsel
 
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
@@ -35,6 +35,10 @@ Non-breaking space: &nbsp; are here on purpose to fix emoji rendering on certain
 
 -->
 
+- ✍ &nbsp;Write snippets once in MarkDown;
+- 🚀 &nbsp;Render them to many IDEs format (VS Code, Vim, Sublime, IntelliJ);
+- ⚙ &nbsp;Flexible and typed configuration.
+
 ## Install
 
 ```bash
@@ -43,9 +47,161 @@ npm install schnipsel
 
 ## Documentation
 
-To discover what's new on this package check out [the changelog][changelog]. 
+Schnipsel is a [CLI](#schnipsel-cli).
 
-WIP
+It reads configuration from a [`schnipsel.config.ts` file](#schnipselconfigts) to renders [input snippets](#snippet-file-format) to desired IDE formats.
+
+### `schnipsel` CLI
+
+```bash
+# Render project
+schnipsel
+
+# Render project in watch mode
+schnipsel --watch
+schnipsel -w
+
+# Init a schnipsel.config.ts file
+schnipsel init
+
+# Display help
+schnipsel --help
+schnipsel -h
+
+# Display version
+schnipsel --version
+schnipsel -v
+```
+
+### `schnipsel.config.ts`
+
+```typescript
+import { defineSchnipselConfig } from "schnipsel";
+
+export default defineSchnipselConfig({
+	/**
+	 * Configures where and how Schnipsel should look for input files.
+	 */
+	input: {
+		/**
+		 * Base directory where to look for input files, typically `./src`.
+		 */
+		directory: "src",
+
+		/**
+		 * An optional glob or glob array to match input files in `directory`.
+		 *
+		 * See Globby `patterns` parameter: https://github.com/sindresorhus/globby#patterns
+		 */
+		glob: "**/*.md",
+	},
+
+	/**
+	 * Configures renderers that should be applied to found input files.
+	 */
+	renderers: [
+		{
+			/**
+			 * Name of the renderer.
+			 * 
+			 * Available:
+			 * 
+			 * visualstudiocode, vscode, vim
+			 * sublimetext, sublime
+			 * intellijidea, intellij
+			 */
+			name: "vscode",
+
+			/**
+			 * Options to pass to the renderer.
+			 */
+			options: {
+				/**
+				 * Output directory where to write rendered snippets.
+				 */
+				outputDirectory: "vscode/snippets",
+
+				/**
+				 * An optional map mapping input file paths from CWD to output file paths to
+				 * copy after render.
+				 */
+				passthroughFileCopy: {
+					/**
+					 * Will copy the `./README.md` to `./vscode/snippets/README.md`
+					 */
+					"./README.md": "./vscode/README.md",
+				},
+
+				/**
+				 * A map mapping input scopes to output scopes or a function receiving an
+				 * input scope and returning an output scope.
+				 *
+				 * See default scope resolver in: https://github.com/prismicio-community/schnipsel/src/renderers/scopeResolver.ts
+				 */
+				scopeResolver: {
+					/**
+					 * Snippet featuring the `xml` scope will render with the `text.xml` scope
+					 * for this renderer.
+					 */
+					xml: "text.xml"
+				},
+
+				// Only for VSCode renderer.
+
+				/**
+				 * An optional path to a `package.json` file where to write the
+				 * `contributes.snippets` map of Visual Studio Code extensions.
+				 */
+				packageJSON: "vscode/package.json",
+
+				// Only for IntelliJ renderer.
+
+				/**
+				 * An optional path to a `plugin.xml` file where to write the `<extensions />`
+				 * default live templates of an IntelliJ IDEA plugin.
+				 */
+				pluginXML: "intellij/src/main/resources/META-INF/plugin.xml",
+			},
+		},
+	],
+});
+```
+
+For more information about Schnipsel configuration, see [src/types.ts](src/types.ts).
+
+### Snippet file format
+
+````markdown
+---
+name: "Hello World"
+description: "Says hello to the world"
+scopes: ["typescript"] # Scope(s) of the snippet. Uses VS Code's by default.
+prefix: "helloWorld" # What triggers the snippet to be suggested
+---
+
+<!--
+
+A code block, everything inside will be the snippet content.
+
+Use `${1}` to define a tab stop.
+Use `${2:defaultValue}` to define a tab stop with a default value.
+
+-->
+
+```typescript
+export const hello${1:World} = (): void => {
+	console.info("Hello ${1:World}!");
+};
+```
+````
+
+### Recommended project structure
+
+See [prismicio/prismic-snippets](https://github.com/prismicio/prismic-snippets) for an example project structure rendering and shipping snippets to multiple IDEs at once.
+
+---
+
+To discover what's new on this package check out [the changelog][changelog]. 
 
 ## Contributing
 

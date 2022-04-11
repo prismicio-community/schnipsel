@@ -1,7 +1,7 @@
 ---
 name: "Hello World Invalid"
 description: "Says hello to the world invalid"
-scope: false
+scopes: false
 prefix: 42
 ---
 

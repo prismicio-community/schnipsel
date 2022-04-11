@@ -1,7 +1,7 @@
 ---
 name: "Hello World"
 description: "Says hello to the world"
-scope: ["typescript"]
+scopes: ["typescript"]
 prefix: "helloWorld"
 ---
 
