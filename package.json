@@ -52,6 +52,7 @@
 		"unit:watch": "vitest watch"
 	},
 	"dependencies": {
+		"c12": "0.2.5",
 		"cac": "^6.7.12",
 		"chalk": "^5.0.1",
 		"chokidar": "3.5.3",
@@ -67,23 +68,24 @@
 	},
 	"devDependencies": {
 		"@size-limit/preset-small-lib": "^7.0.8",
+		"@types/escape-html": "1.0.1",
 		"@types/exit": "0.1.31",
 		"@types/semver": "7.3.9",
 		"@typescript-eslint/eslint-plugin": "^5.18.0",
 		"@typescript-eslint/parser": "^5.18.0",
 		"c8": "^7.11.0",
 		"cross-env": "7.0.3",
-		"eslint": "^8.12.0",
+		"eslint": "^8.13.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-prettier": "^4.0.0",
-		"eslint-plugin-tsdoc": "^0.2.14",
+		"eslint-plugin-tsdoc": "^0.2.16",
 		"prettier": "^2.6.2",
 		"prettier-plugin-jsdoc": "^0.3.36",
 		"siroc": "^0.16.0",
 		"size-limit": "^7.0.8",
 		"standard-version": "^9.3.2",
 		"typescript": "^4.6.3",
-		"vitest": "^0.9.0"
+		"vitest": "^0.9.3"
 	},
 	"engines": {
 		"node": ">=12.7.0"

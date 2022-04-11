@@ -1,43 +1,84 @@
-import chalk from "chalk";
+import { join } from "node:path";
+import { existsSync } from "node:fs";
+import { writeFile } from "node:fs/promises";
 
-import { JSONFile, JSONFileWithMeta, debug } from "./lib";
+import chalk from "chalk";
+import { loadConfig } from "c12";
+
+import { JSONFile, debug } from "./lib";
 import { CONFIG_FILE, NAME } from "./const";
-import { Config } from "./types";
+import { SchnipselConfig } from "./types";
 import { Renderers } from "./renderers";
 
-export class ConfigFile extends JSONFile<Config> {
+export class ConfigFile {
+	private _name: typeof CONFIG_FILE = CONFIG_FILE;
+	get name() {
+		return this._name;
+	}
+
+	private _cwd: string;
+	get cwd() {
+		return this._cwd;
+	}
+
+	private _path: string;
+	get path() {
+		return this._path;
+	}
+
 	constructor(cwd = process.cwd()) {
-		super(CONFIG_FILE, cwd);
+		this._cwd = cwd;
+		this._path = join(this.cwd, this.name);
+	}
+
+	exists() {
+		return existsSync(this.path);
 	}
 
 	async init(): Promise<void> {
 		if (this.exists()) {
 			throw new Error(
-				`${chalk.cyan(CONFIG_FILE)} already exists in ${chalk.cyan(this.cwd)}`,
+				`${chalk.cyan(this.name)} already exists in ${chalk.cyan(this.cwd)}`,
 			);
 		}
 
-		await this.write({
-			__meta: await new JSONFile("package.json", this.cwd).readMeta(),
-			input: {
-				directory: "src",
-			},
-			renderers: [],
-		});
+		const { indent } = await new JSONFile("package.json", this.cwd).readMeta();
+
+		await writeFile(
+			this.path,
+			`import { defineSchnipselConfig } from "schnipsel";
+
+export default defineSchnipselConfig({
+	input: {
+		directory: "src",
+	},
+	renderers: [],
+});
+`.replace(/\t/g, indent),
+			"utf8",
+		);
 	}
 
-	async read(): Promise<JSONFileWithMeta<Config>> {
+	async read(): Promise<SchnipselConfig> {
 		debug("Reading config file...");
+
+		const { config } = await loadConfig({
+			name: "schnipsel",
+			configFile: "schnipsel.config",
+			rcFile: false,
+			globalRc: false,
+			cwd: this.cwd,
+		});
 
 		if (!this.exists()) {
 			throw new Error(
-				`${chalk.cyan(CONFIG_FILE)} not found in ${chalk.cyan(
+				`${chalk.cyan(this.name)} not found in ${chalk.cyan(
 					this.cwd,
 				)}, create one with ${chalk.cyan(`${NAME} init`)}`,
 			);
 		}
 
-		const config = await super.read();
+		// const config = await super.read();
 
 		this.validate(config);
 
@@ -47,8 +88,8 @@ export class ConfigFile extends JSONFile<Config> {
 	}
 
 	validate(
-		maybeConfig: JSONFileWithMeta,
-	): asserts maybeConfig is JSONFileWithMeta<Config> {
+		maybeConfig: Record<string, unknown>,
+	): asserts maybeConfig is SchnipselConfig {
 		const errors: string[] = [];
 
 		// Validate `input`
@@ -177,7 +218,7 @@ export class ConfigFile extends JSONFile<Config> {
 
 		if (errors.length) {
 			throw new Error(
-				`Invalid ${chalk.cyan(CONFIG_FILE)} at ${chalk.cyan(
+				`Invalid ${chalk.cyan(this.name)} at ${chalk.cyan(
 					this.cwd,
 				)}:\n\n- ${errors.join("\n- ")}`,
 			);
