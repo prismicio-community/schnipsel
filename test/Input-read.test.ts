@@ -1,7 +1,11 @@
 import { test, expect, vi } from "vitest";
 
+import chalk from "chalk";
+
 import { logger } from "../src/lib";
 import { Input } from "../src/Input";
+
+chalk.level = 0;
 
 vi.mock("../src/lib", async () => {
 	const {

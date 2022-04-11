@@ -28,32 +28,32 @@ exports[`reads input directory and warns about invalid files 1`] = `
 exports[`reads input directory and warns about invalid files 2`] = `
 [
   [
-    "Invalid snippet file [36memptyFrontMatter.md[39m (snippet will be ignored):
+    "Invalid snippet file emptyFrontMatter.md (snippet will be ignored):
 
-- [36mname[39m is missing
-- [36mdescription[39m is missing
-- [36mprefix[39m is missing
-- [36mscopes[39m is missing",
+- name is missing
+- description is missing
+- prefix is missing
+- scopes is missing",
   ],
   [
-    "Invalid snippet file [36minvalidFrontMatter.md[39m (snippet will be ignored):
+    "Invalid snippet file invalidFrontMatter.md (snippet will be ignored):
 
-- [36mprefix[39m should be of type [36mstring[39m
-- [36mscopes[39m should be of type [36mstring[][39m",
+- prefix should be of type string
+- scopes should be of type string[]",
   ],
   [
-    "Invalid snippet file [36mmissingFrontMatter.md[39m (snippet will be ignored):
+    "Invalid snippet file missingFrontMatter.md (snippet will be ignored):
 
-- [36mname[39m is missing
-- [36mdescription[39m is missing
-- [36mprefix[39m is missing
-- [36mscopes[39m is missing",
+- name is missing
+- description is missing
+- prefix is missing
+- scopes is missing",
   ],
   [
-    "Invalid snippet file [36mpartialFrontMatter.md[39m (snippet will be ignored):
+    "Invalid snippet file partialFrontMatter.md (snippet will be ignored):
 
-- [36mprefix[39m is missing
-- [36mscopes[39m is missing",
+- prefix is missing
+- scopes is missing",
   ],
 ]
 `;
