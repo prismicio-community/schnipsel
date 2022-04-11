@@ -65,6 +65,7 @@ export class IntelliJIDEARenderer extends Renderer<IntelliJIDEARendererOptions> 
 			scope: batchedSnippets.scope,
 			body: `<templateSet group="${batchedSnippets.scope}">
 	${batchedSnippets.snippets
+		.sort((a, b) => (a.name > b.name ? 1 : -1))
 		.map((snippet) => this.renderSnippet(snippet, batchedSnippets.scope))
 		.join("\n\t")}
 </templateSet>

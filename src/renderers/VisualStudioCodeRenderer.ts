@@ -42,6 +42,7 @@ export class VisualStudioCodeRenderer extends Renderer<VisualStudioCodeRendererO
 			scope: batchedSnippets.scope,
 			body: `${JSON.stringify(
 				batchedSnippets.snippets
+					.sort((a, b) => (a.name > b.name ? 1 : -1))
 					.map((snippet) => this.renderSnippet(snippet, batchedSnippets.scope))
 					.reduce<Record<string, unknown>>((acc, renderedSnippet) => {
 						return { ...acc, ...(renderedSnippet as Record<string, unknown>) };
