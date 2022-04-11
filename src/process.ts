@@ -40,11 +40,15 @@ export const readAndRender = async (
 /**
  * Runs Schnipsel in the current working directory.
  *
+ * @param config - The configuration to use, will default to the one available
+ *   in the current working directory or throw if not available.
  * @param cwd - The current working directory.
  */
-export const run = async (cwd = process.cwd()) => {
-	const configFile = new ConfigFile(cwd);
-	const config = await configFile.read();
+export const run = async (config: SchnipselConfig, cwd = process.cwd()) => {
+	if (!config) {
+		const configFile = new ConfigFile(cwd);
+		config = await configFile.read();
+	}
 
 	await readAndRender(config, cwd);
 };
@@ -52,11 +56,18 @@ export const run = async (cwd = process.cwd()) => {
 /**
  * Runs Schnipsel in the current working directory and watch for changes
  *
+ * @param config - The configuration to use, will default to the one available
+ *   in the current working directory or throw if not available.
  * @param cwd - The current working directory.
  */
-export const runWatch = async (cwd = process.cwd()) => {
-	const configFile = new ConfigFile(cwd);
-	const config = await configFile.read();
+export const runWatch = async (
+	config: SchnipselConfig,
+	cwd = process.cwd(),
+) => {
+	if (!config) {
+		const configFile = new ConfigFile(cwd);
+		config = await configFile.read();
+	}
 
 	const handler = async () => {
 		console.clear();
