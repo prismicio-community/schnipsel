@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2](https://github.com/prismicio-community/schnipsel/compare/v0.0.1...v0.0.2) (2022-04-11)
+
+
+### Features
+
+* allow providing config to process runners ([182a976](https://github.com/prismicio-community/schnipsel/commit/182a97668fdc8e37a179a2e6c4c819e71c04ab63))
+* **renderers:** sort snippets by name ([1d45985](https://github.com/prismicio-community/schnipsel/commit/1d4598533ba08d5aa40c0158ff3d288783bf3e8b))
+
 ### 0.0.1 (2022-04-11)
 
 
