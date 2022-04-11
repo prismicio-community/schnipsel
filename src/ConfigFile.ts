@@ -1,38 +1,14 @@
-import { join } from "node:path";
-import { existsSync } from "node:fs";
-import { writeFile } from "node:fs/promises";
-
 import chalk from "chalk";
 import { loadConfig } from "c12";
 
-import { JSONFile, debug } from "./lib";
+import { JSONFile, debug, AnyFile } from "./lib";
 import { CONFIG_FILE, NAME } from "./const";
 import { SchnipselConfig } from "./types";
 import { Renderers } from "./renderers";
 
-export class ConfigFile {
-	private _name: typeof CONFIG_FILE = CONFIG_FILE;
-	get name() {
-		return this._name;
-	}
-
-	private _cwd: string;
-	get cwd() {
-		return this._cwd;
-	}
-
-	private _path: string;
-	get path() {
-		return this._path;
-	}
-
+export class ConfigFile extends AnyFile<SchnipselConfig> {
 	constructor(cwd = process.cwd()) {
-		this._cwd = cwd;
-		this._path = join(this.cwd, this.name);
-	}
-
-	exists() {
-		return existsSync(this.path);
+		super(CONFIG_FILE, cwd);
 	}
 
 	async init(): Promise<void> {
@@ -44,8 +20,7 @@ export class ConfigFile {
 
 		const { indent } = await new JSONFile("package.json", this.cwd).readMeta();
 
-		await writeFile(
-			this.path,
+		await this._write(
 			`import { defineSchnipselConfig } from "schnipsel";
 
 export default defineSchnipselConfig({
@@ -78,20 +53,11 @@ export default defineSchnipselConfig({
 	],
 });
 `.replace(/\t/g, indent),
-			"utf8",
 		);
 	}
 
 	async read(): Promise<SchnipselConfig> {
 		debug("Reading config file...");
-
-		const { config } = await loadConfig({
-			name: "schnipsel",
-			configFile: "schnipsel.config",
-			rcFile: false,
-			globalRc: false,
-			cwd: this.cwd,
-		});
 
 		if (!this.exists()) {
 			throw new Error(
@@ -101,13 +67,23 @@ export default defineSchnipselConfig({
 			);
 		}
 
-		// const config = await super.read();
+		const { config } = await loadConfig({
+			name: "schnipsel",
+			configFile: "schnipsel.config",
+			rcFile: false,
+			globalRc: false,
+			cwd: this.cwd,
+		});
 
 		this.validate(config);
 
 		debug("Config file read and validated!");
 
 		return config;
+	}
+
+	async write(_config: SchnipselConfig): Promise<void> {
+		throw new Error("`ConfigFile.write()` is not supported");
 	}
 
 	validate(

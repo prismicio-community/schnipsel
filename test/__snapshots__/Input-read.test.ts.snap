@@ -1,0 +1,59 @@
+// Vitest Snapshot v1
+
+exports[`reads input directory and warns about invalid files 1`] = `
+[
+  {
+    "body": "export const hello = (str: string): void => {
+	console.info(\\"Hello %s\\", str);
+};",
+    "description": "Says hello to the world",
+    "name": "Hello World",
+    "prefix": "helloWorld",
+    "scopes": [
+      "typescript",
+    ],
+  },
+  {
+    "body": "",
+    "description": "Says hello to the world missing",
+    "name": "Hello World Missing",
+    "prefix": "helloWorldMissing",
+    "scopes": [
+      "typescript",
+    ],
+  },
+]
+`;
+
+exports[`reads input directory and warns about invalid files 2`] = `
+[
+  [
+    "Invalid snippet file [36memptyFrontMatter.md[39m (snippet will be ignored):
+
+- [36mname[39m is missing
+- [36mdescription[39m is missing
+- [36mprefix[39m is missing
+- [36mscopes[39m is missing",
+  ],
+  [
+    "Invalid snippet file [36minvalidFrontMatter.md[39m (snippet will be ignored):
+
+- [36mprefix[39m should be of type [36mstring[39m
+- [36mscopes[39m should be of type [36mstring[][39m",
+  ],
+  [
+    "Invalid snippet file [36mmissingFrontMatter.md[39m (snippet will be ignored):
+
+- [36mname[39m is missing
+- [36mdescription[39m is missing
+- [36mprefix[39m is missing
+- [36mscopes[39m is missing",
+  ],
+  [
+    "Invalid snippet file [36mpartialFrontMatter.md[39m (snippet will be ignored):
+
+- [36mprefix[39m is missing
+- [36mscopes[39m is missing",
+  ],
+]
+`;

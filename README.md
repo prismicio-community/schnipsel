@@ -35,7 +35,7 @@ Non-breaking space: &nbsp; are here on purpose to fix emoji rendering on certain
 
 -->
 
-- ✍ &nbsp;Write snippets once in MarkDown;
+- ✍ &nbsp;Write snippets once in Markdown;
 - 🚀 &nbsp;Render them to many IDEs format (VS Code, Vim, Sublime, IntelliJ);
 - ⚙ &nbsp;Flexible and typed configuration.
 

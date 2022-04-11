@@ -1,0 +1,100 @@
+// Vitest Snapshot v1
+
+exports[`reads and writes snippet files according to config 1`] = `
+"<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?>
+<idea-plugin>
+	<extensions defaultExtensionNs=\\"com.intellij\\">
+		<!--SCHNIPSEL-->
+		<defaultLiveTemplates file=\\"/liveTemplates/typescript.xml\\"/>
+		<!--ENDSCHNIPSEL-->
+	</extensions>
+</idea-plugin>
+
+
+
+<snippet>
+	<content><![CDATA[
+
+]]></content>
+	<tabTrigger>helloWorldMissing</tabTrigger>
+	<scope>source.ts</scope>
+	<description>Says hello to the world missing</description>
+</snippet>
+
+
+
+<snippet>
+	<content><![CDATA[
+export const hello = (str: string): void => {
+	console.info(\\"Hello %s\\", str);
+};
+]]></content>
+	<tabTrigger>helloWorld</tabTrigger>
+	<scope>source.ts</scope>
+	<description>Says hello to the world</description>
+</snippet>
+
+
+
+<templateSet group=\\"typescript\\">
+	<template
+		name=\\"helloWorld\\"
+		value=\\"export const hello = (str: string): void =&gt; {&#10;	console.info(&quot;Hello %s&quot;, str);&#10;};\\"
+		description=\\"Says hello to the world\\"
+		toReformat=\\"true\\"
+		toShortenFQNames=\\"true\\"
+	>
+		<context>
+			<option name=\\"TYPESCRIPT\\" value=\\"true\\"/>
+		</context>
+	</template>
+	<template
+		name=\\"helloWorldMissing\\"
+		value=\\"\\"
+		description=\\"Says hello to the world missing\\"
+		toReformat=\\"true\\"
+		toShortenFQNames=\\"true\\"
+	>
+		<context>
+			<option name=\\"TYPESCRIPT\\" value=\\"true\\"/>
+		</context>
+	</template>
+</templateSet>
+
+
+
+{
+  \\"Hello World\\": {
+    \\"scope\\": \\"typescript\\",
+    \\"prefix\\": \\"helloWorld\\",
+    \\"description\\": \\"Says hello to the world\\",
+    \\"body\\": [
+      \\"export const hello = (str: string): void => {\\",
+      \\"\\\\tconsole.info(\\\\\\"Hello %s\\\\\\", str);\\",
+      \\"};\\"
+    ]
+  },
+  \\"Hello World Missing\\": {
+    \\"scope\\": \\"typescript\\",
+    \\"prefix\\": \\"helloWorldMissing\\",
+    \\"description\\": \\"Says hello to the world missing\\",
+    \\"body\\": [
+      \\"\\"
+    ]
+  }
+}
+
+
+
+{
+  \\"contributes\\": {
+    \\"snippets\\": [
+      {
+        \\"language\\": \\"typescript\\",
+        \\"path\\": \\"./snippets/typescript.code-snippets\\"
+      }
+    ]
+  }
+}
+"
+`;
