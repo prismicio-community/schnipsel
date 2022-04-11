@@ -1,9 +1,6 @@
-import { join } from "node:path";
-import { existsSync } from "node:fs";
-import { readFile, writeFile } from "node:fs/promises";
-
 import detectIndent from "detect-indent";
-import chalk from "chalk";
+
+import { AnyFile } from "./AnyFile";
 
 export type JSONFileMeta = {
 	indent: string;
@@ -13,46 +10,19 @@ export type JSONFileWithMeta<T = Record<string, unknown>> = {
 	__meta: JSONFileMeta;
 } & T;
 
-export class JSONFile<T = Record<string, unknown>> {
-	private _name: string;
-	get name() {
-		return this._name;
-	}
-
-	private _cwd: string;
-	get cwd() {
-		return this._cwd;
-	}
-
-	private _path: string;
-	get path() {
-		return this._path;
-	}
-
+export class JSONFile<T = Record<string, unknown>> extends AnyFile<T> {
 	private _meta: JSONFileMeta;
 	get meta() {
 		return this._meta;
 	}
 
 	constructor(name: string, cwd = process.cwd()) {
-		this._name = name;
-		this._cwd = cwd;
-		this._path = join(cwd, name);
+		super(name, cwd);
 		this._meta = { indent: "  " };
 	}
 
-	exists() {
-		return existsSync(this.path);
-	}
-
 	async read(): Promise<JSONFileWithMeta<T>> {
-		if (!this.exists()) {
-			throw new Error(
-				`${chalk.cyan(this.name)} not found in ${chalk.cyan(this.cwd)}`,
-			);
-		}
-
-		const raw = await readFile(this.path, "utf8");
+		const raw = await this._read();
 		const indent = detectIndent(raw).indent || "  ";
 		const json = JSON.parse(raw);
 
@@ -71,6 +41,6 @@ export class JSONFile<T = Record<string, unknown>> {
 
 		const raw = `${JSON.stringify(rest, undefined, meta.indent)}\n`;
 
-		await writeFile(this.path, raw);
+		await this._write(raw);
 	}
 }

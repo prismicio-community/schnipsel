@@ -7,12 +7,15 @@ import { ConfigFile } from "./ConfigFile";
 import { Input } from "./Input";
 import { Renderers } from "./renderers";
 import { logger } from "./lib";
-import { Config } from "./types";
+import { SchnipselConfig } from "./types";
 
-export const readAndRender = async (config: Config) => {
+export const readAndRender = async (
+	config: SchnipselConfig,
+	cwd = process.cwd(),
+) => {
 	const now = Date.now();
 
-	const input = new Input(config.input);
+	const input = new Input(config.input, cwd);
 	const snippets = await input.read();
 
 	logger.info(
@@ -25,7 +28,7 @@ export const readAndRender = async (config: Config) => {
 
 	await Promise.all(
 		config.renderers.map(async (renderer) =>
-			new Renderers[renderer.name](renderer.options).render(snippets),
+			new Renderers[renderer.name](renderer.options, cwd).render(snippets),
 		),
 	);
 
@@ -34,15 +37,25 @@ export const readAndRender = async (config: Config) => {
 	);
 };
 
-export const run = async () => {
-	const configFile = new ConfigFile();
+/**
+ * Runs Schnipsel in the current working directory.
+ *
+ * @param cwd - The current working directory.
+ */
+export const run = async (cwd = process.cwd()) => {
+	const configFile = new ConfigFile(cwd);
 	const config = await configFile.read();
 
-	await readAndRender(config);
+	await readAndRender(config, cwd);
 };
 
-export const runWatch = async () => {
-	const configFile = new ConfigFile();
+/**
+ * Runs Schnipsel in the current working directory and watch for changes
+ *
+ * @param cwd - The current working directory.
+ */
+export const runWatch = async (cwd = process.cwd()) => {
+	const configFile = new ConfigFile(cwd);
 	const config = await configFile.read();
 
 	const handler = async () => {
@@ -55,7 +68,7 @@ export const runWatch = async () => {
 				)}:${`00${now.getSeconds()}`.slice(-2)}`,
 			)})`,
 		);
-		await readAndRender(config);
+		await readAndRender(config, cwd);
 	};
 
 	chokidar

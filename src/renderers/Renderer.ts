@@ -29,6 +29,7 @@ export abstract class Renderer<
 
 	protected cwd: string;
 	protected debug: (...str: string[]) => void;
+	protected tasks: Promise<void>[] = [];
 
 	constructor(name: string, options: TOptions, cwd = process.cwd()) {
 		this._name = name;
@@ -61,13 +62,25 @@ export abstract class Renderer<
 
 						await copyFile(
 							join(this.cwd, inputFile),
-							join(this.cwd, this.options.outputDirectory, outputFile),
+							join(this.cwd, outputFile),
 						);
 
 						this.debug("Copied %o to %o!", inputFile, outputFile);
 					},
 				),
 			);
+		}
+	}
+
+	protected resolveScope(scope: string): string {
+		if (this.options.scopeResolver) {
+			if (typeof this.options.scopeResolver === "function") {
+				return this.options.scopeResolver(scope);
+			} else {
+				return this.options.scopeResolver[scope] || scope;
+			}
+		} else {
+			return scope;
 		}
 	}
 
@@ -109,5 +122,21 @@ export abstract class Renderer<
 		snippets: SnippetObject[],
 	): BatchedSnippets[];
 
-	abstract render(snippets: SnippetObject[]): Promise<void>;
+	async render(
+		snippets: SnippetObject[],
+		skipTasks?: boolean,
+	): Promise<RenderedSnippetFile[]> {
+		await this.createOutputDirectory();
+
+		const snippetFiles = this.renderSnippetFiles(this.batchSnippets(snippets));
+
+		this.tasks.push(this.writeSnippetFiles(snippetFiles));
+		this.tasks.push(this.copyPassthroughFiles());
+
+		if (!skipTasks) {
+			await Promise.all(this.tasks);
+		}
+
+		return snippetFiles;
+	}
 }

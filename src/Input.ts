@@ -34,16 +34,11 @@ export class Input {
 				);
 			}
 		});
-		if (!("scope" in attributes)) {
-			errors.push(`${chalk.cyan("scope")} is missing`);
-		} else if (
-			typeof attributes.scope !== "string" &&
-			!Array.isArray(attributes.scope)
-		) {
+		if (!("scopes" in attributes)) {
+			errors.push(`${chalk.cyan("scopes")} is missing`);
+		} else if (!Array.isArray(attributes.scopes)) {
 			errors.push(
-				`${chalk.cyan("scope")} should be of type ${chalk.cyan(
-					"string | string[]",
-				)}`,
+				`${chalk.cyan("scopes")} should be of type ${chalk.cyan("string[]")}`,
 			);
 		}
 
@@ -60,9 +55,7 @@ export class Input {
 		return {
 			name: attributes.name as string,
 			description: attributes.description as string,
-			scope: (Array.isArray(attributes.scope)
-				? attributes.scope
-				: [attributes.scope]) as string[],
+			scopes: attributes.scopes as string[],
 			prefix: attributes.prefix as string,
 			// Only keep code block content
 			body: body.replace(/^.*?```\w*\n+/m, "").replace(/\n+```.*\n?$/m, ""),

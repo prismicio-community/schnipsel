@@ -52,7 +52,30 @@ export default defineSchnipselConfig({
 	input: {
 		directory: "src",
 	},
-	renderers: [],
+
+	// Update or remove renderers according to desired result...
+	renderers: [
+		{
+			name: "vscode",
+			options: {
+				outputDirectory: "vscode/snippets",
+				packageJSON: "vscode/package.json",
+			},
+		},
+		{
+			name: "sublime",
+			options: {
+				outputDirectory: "sublime/snippets",
+			},
+		},
+		{
+			name: "intellij",
+			options: {
+				outputDirectory: "intellij/src/main/resources/liveTemplates",
+				pluginXML: "intellij/src/main/resources/META-INF/plugin.xml",
+			},
+		},
+	],
 });
 `.replace(/\t/g, indent),
 			"utf8",

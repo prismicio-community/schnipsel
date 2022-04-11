@@ -1,19 +1,21 @@
-import { join, relative } from "node:path";
+import { join, relative, dirname } from "node:path/posix";
+
+import chalk from "chalk";
+
 import { JSONFile, JSONFileMeta } from "../lib";
+import { SnippetObject, VisualStudioCodeRendererOptions } from "../types";
+import { BatchedSnippets, RenderedSnippetFile, Renderer } from "./Renderer";
+import { VISUAL_STUDIO_CODE_SCOPE_RESOLVER } from "./scopeResolvers";
 
-import { SnippetObject, VSCodeRendererOptions } from "../types";
-import {
-	BatchedSnippets,
-	RenderedSnippet,
-	RenderedSnippetFile,
-	Renderer,
-} from "./Renderer";
-
-export class VSCodeRenderer extends Renderer<VSCodeRendererOptions> {
+export class VisualStudioCodeRenderer extends Renderer<VisualStudioCodeRendererOptions> {
 	private _jsonMeta: JSONFileMeta;
 
-	constructor(options: VSCodeRendererOptions, cwd = process.cwd()) {
-		super("vscode", options, cwd);
+	constructor(options: VisualStudioCodeRendererOptions, cwd = process.cwd()) {
+		super(
+			"vscode",
+			{ scopeResolver: VISUAL_STUDIO_CODE_SCOPE_RESOLVER, ...options },
+			cwd,
+		);
 
 		this._jsonMeta = { indent: "  " };
 	}
@@ -21,10 +23,10 @@ export class VSCodeRenderer extends Renderer<VSCodeRendererOptions> {
 	protected renderSnippet(
 		snippet: SnippetObject,
 		scope: string,
-	): RenderedSnippet {
+	): Record<string, unknown> {
 		return {
 			[snippet.name]: {
-				scope,
+				scope: this.resolveScope(scope),
 				prefix: snippet.prefix,
 				description: snippet.description,
 				body: snippet.body.split("\n"),
@@ -54,7 +56,7 @@ export class VSCodeRenderer extends Renderer<VSCodeRendererOptions> {
 		return Object.values(
 			snippets.reduce<Record<string, BatchedSnippets>>(
 				(batchedSnippets, snippet) => {
-					snippet.scope.forEach((scope) => {
+					snippet.scopes.forEach((scope) => {
 						batchedSnippets[scope] ||= {
 							scope,
 							snippets: [],
@@ -72,22 +74,26 @@ export class VSCodeRenderer extends Renderer<VSCodeRendererOptions> {
 
 	protected async updatePackageJSON(snippetFiles: RenderedSnippetFile[]) {
 		if (!this.options.packageJSON) {
-			throw new TypeError("No package.json file specified in renderer options");
+			throw new TypeError(
+				`No ${chalk.cyan("package.json")} file specified in renderer options`,
+			);
 		}
 
 		this.debug("Updating %o", this.options.packageJSON);
 
-		const snippets = snippetFiles.map((snippetFile) => ({
-			language: snippetFile.scope,
-			path: join(
-				relative(
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-					join(this.cwd, this.options.packageJSON!),
-					join(this.cwd, this.options.outputDirectory),
-				),
-				snippetFile.name,
-			),
-		}));
+		const snippets = snippetFiles
+			.sort((a, b) => (a.scope > b.scope ? 1 : -1))
+			.map((snippetFile) => ({
+				language: snippetFile.scope,
+				path: `./${join(
+					relative(
+						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+						join(this.cwd, dirname(this.options.packageJSON!)),
+						join(this.cwd, this.options.outputDirectory),
+					),
+					snippetFile.name,
+				)}`,
+			}));
 
 		const pkgJSONFile = new JSONFile<{
 			contributes?: { snippets?: { language: string; path: string }[] };
@@ -100,7 +106,7 @@ export class VSCodeRenderer extends Renderer<VSCodeRendererOptions> {
 		this.debug("%o updated!", this.options.packageJSON);
 	}
 
-	async render(snippets: SnippetObject[]): Promise<void> {
+	async render(snippets: SnippetObject[]): Promise<RenderedSnippetFile[]> {
 		// Grab JSON meta for `this.renderSnippetFile()`
 		try {
 			this._jsonMeta = await new JSONFile(
@@ -111,18 +117,14 @@ export class VSCodeRenderer extends Renderer<VSCodeRendererOptions> {
 			// Ignore
 		}
 
-		await this.createOutputDirectory();
+		const snippetFiles = await super.render(snippets, true);
 
-		const snippetFiles = this.renderSnippetFiles(this.batchSnippets(snippets));
-
-		const tasks = [
-			this.writeSnippetFiles(snippetFiles),
-			this.copyPassthroughFiles(),
-		];
 		if (this.options.packageJSON) {
-			tasks.push(this.updatePackageJSON(snippetFiles));
+			this.tasks.push(this.updatePackageJSON(snippetFiles));
 		}
 
-		await Promise.all(tasks);
+		await Promise.all(this.tasks);
+
+		return snippetFiles;
 	}
 }

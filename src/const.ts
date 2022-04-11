@@ -8,4 +8,4 @@ export const NAME = pkgName;
 export const PACKAGE = pkgName;
 export const DESCRIPTION = pkgDescription;
 export const VERSION = pkgVersion;
-export const CONFIG_FILE = `${NAME}.config.json`;
+export const CONFIG_FILE = `${NAME}.config.ts`;
