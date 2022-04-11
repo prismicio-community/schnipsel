@@ -1,6 +1,6 @@
 {
 	"name": "schnipsel",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"description": "Write snippets once, render them for many IDEs",
 	"keywords": [
 		"snippets",
