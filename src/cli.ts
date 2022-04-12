@@ -24,7 +24,7 @@ cli
 	});
 
 cli
-	.command("init", `Init a \`${CONFIG_FILE}\` file`, {
+	.command("init", `Init a ${chalk.cyan(CONFIG_FILE)} file`, {
 		allowUnknownOptions: false,
 	})
 	.action(async (options) => {
