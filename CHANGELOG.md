@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.3](https://github.com/prismicio-community/schnipsel/compare/v0.0.2...v0.0.3) (2022-04-14)
+
+
+### Bug Fixes
+
+* **intellij:** remove escape on escaped non-variable ([0e5f604](https://github.com/prismicio-community/schnipsel/commit/0e5f604030ee9095fe0a660c90fc7fa004031740))
+
+
+### Chore
+
+* **deps:** maintain dependencies ([a4fd610](https://github.com/prismicio-community/schnipsel/commit/a4fd610c3dcea86d8176b863c167cd0d3a019450))
+
 ### [0.0.2](https://github.com/prismicio-community/schnipsel/compare/v0.0.1...v0.0.2) (2022-04-11)
 
 
