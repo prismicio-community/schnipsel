@@ -17,10 +17,10 @@ export class IntelliJIDEARenderer extends Renderer<IntelliJIDEARendererOptions> 
 
 	protected renderSnippet(snippet: SnippetObject, scope: string): string {
 		/**
-		 * @see Regex101 expression: {@link https://regex101.com/r/quBBdv/2}
+		 * @see Regex101 expression: {@link https://regex101.com/r/e1TjuV/1}
 		 */
-		const VARIABLE_REGEX = /\${(?<name>\d)(:(?<default>[^$]+?))?}/gim;
-		const VARIABLE_CLEANUP_REGEX = /\${\d:(.+?)}/gim;
+		const VARIABLE_REGEX = /\${(?<name>\d+)(:(?<default>[^$]+?))?}/gim;
+		const VARIABLE_CLEANUP_REGEX = /\${\d+:(.+?)}/gim;
 
 		// Resolve body and variables
 		let body = snippet.body;
@@ -35,6 +35,8 @@ export class IntelliJIDEARenderer extends Renderer<IntelliJIDEARendererOptions> 
 		}
 		body = escapeHTML(body)
 			.replace(VARIABLE_CLEANUP_REGEX, "$1")
+			// Unescape escaped non-variables
+			.replace(/\\(\${)/g, "$1")
 			.replace(/\n/g, "&#10;");
 
 		return /* xml */ `<template
