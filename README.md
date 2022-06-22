@@ -136,7 +136,7 @@ export default defineSchnipselConfig({
 				 * A map mapping input scopes to output scopes or a function receiving an
 				 * input scope and returning an output scope.
 				 *
-				 * See default scope resolver in: https://github.com/prismicio-community/schnipsel/src/renderers/scopeResolver.ts
+				 * See default scope resolver in: https://github.com/prismicio-community/schnipsel/blob/master/src/renderers/scopeResolvers.ts
 				 */
 				scopeResolver: {
 					/**
@@ -237,17 +237,13 @@ For more clarity on this project and its structure you can also check out the de
 
 <!-- Links -->
 
-[prismic]: https://prismic.io
-
 <!-- TODO: Replace link with a more useful one if available -->
 
-[prismic-docs]: https://prismic.io/docs
 [changelog]: ./CHANGELOG.md
 [contributing]: ./CONTRIBUTING.md
 
 <!-- TODO: Replace link with a more useful one if available -->
 
-[forum-question]: https://community.prismic.io
 [repo-bug-report]: https://github.com/prismicio-community/schnipsel/issues/new?assignees=&labels=bug&template=bug_report.md&title=
 [repo-feature-request]: https://github.com/prismicio-community/schnipsel/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=
 [repo-pull-requests]: https://github.com/prismicio-community/schnipsel/pulls
