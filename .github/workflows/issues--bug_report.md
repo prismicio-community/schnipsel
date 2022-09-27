@@ -11,6 +11,6 @@ Following our [Maintenance Process](../blob/HEAD/CONTRIBUTING.md#maintaining), w
 
 If you have identified the cause of the bug described in your report and know how to fix it, you're more than welcome to [open a pull request](../pulls) addressing it. Check out our [quick start guide](../blob/HEAD/CONTRIBUTING.md#quick-start) for a simple contribution process.
 
-If you think your issue is a _question_ (not a bug) and would like quicker support, please _close this issue_ and forward it to an appropriate section on our community forum: https://community.prismic.io
+<!-- If you think your issue is a _question_ (not a bug) and would like quicker support, please _close this issue_ and forward it to an appropriate section on our community forum: https://community.prismic.io -->
 
 _- The Prismic Open-Source Team_
